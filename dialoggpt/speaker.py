@@ -1,11 +1,15 @@
 import tempfile
 import types
+from logging import getLogger, NullHandler
 from pathlib import Path
 from typing import Generator
 
 from google.cloud import texttospeech
 from pydub import AudioSegment
 from pydub.playback import play
+
+logger = getLogger(__name__)
+logger.addHandler(NullHandler())
 
 
 class Speaker:

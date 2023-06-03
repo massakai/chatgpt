@@ -1,8 +1,12 @@
 import os
 from enum import StrEnum
+from logging import getLogger, NullHandler
 from typing import Generator, Self, Sequence, Type
 
 import openai
+
+logger = getLogger(__name__)
+logger.addHandler(NullHandler())
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
