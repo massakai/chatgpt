@@ -1,7 +1,10 @@
+import os
 from enum import StrEnum
 from typing import Self, Sequence, Type
 
 import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class Role(StrEnum):
