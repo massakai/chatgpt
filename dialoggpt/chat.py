@@ -1,6 +1,6 @@
 import os
 from enum import StrEnum
-from typing import Self, Sequence, Type
+from typing import Generator, Self, Sequence, Type
 
 import openai
 
@@ -31,15 +31,28 @@ class Chat:
         else:
             self._messages = []
 
-    def send(self, content: str):
+    def send(self, content: str, stream: bool = False) -> str | Generator[str, None, None]:
         self._append_message(Role.USER, content)
 
         response = openai.ChatCompletion.create(
             model=self._model,
             messages=self._messages,
-            stream=True
+            stream=stream
         )
 
+        if stream:
+            return self._send_generator()
+        else:
+            message = response["choices"][0]["message"]
+            self._append_message(Role.of(message["role"]), message["content"])
+            return message["content"]
+
+    def _send_generator(self) -> Generator[str, None, None]:
+        response = openai.ChatCompletion.create(
+            model=self._model,
+            messages=self._messages,
+            stream=True
+        )
         role = None
         chunks = []
         for chunk in response:
@@ -68,11 +81,8 @@ def main():
         if not content.strip():
             break
 
-        stream = chat.send(content)
-        print("assistant: ", end="")
-        for content in stream:
-            print(content, end="")
-        print()
+        reply = chat.send(content)
+        print(f"assistant: {reply}")
 
 
 if __name__ == "__main__":
