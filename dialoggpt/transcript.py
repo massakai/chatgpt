@@ -5,9 +5,6 @@ from typing import Generator
 import pyaudio
 from google.cloud import speech
 
-RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
-
 
 class MicrophoneStream:
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -76,11 +73,11 @@ class MicrophoneStream:
 
 
 class Transcriptionist:
-    def __init__(self, language_code: str):
+    def __init__(self, language_code: str, rate: int):
         self._client = speech.SpeechClient()
         config = speech.RecognitionConfig(
             encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            sample_rate_hertz=RATE,
+            sample_rate_hertz=rate,
             language_code=language_code,
         )
 
@@ -109,9 +106,12 @@ class Transcriptionist:
 
 
 def main():
+    RATE = 16000
+    CHUNK = int(RATE / 10)  # 100ms
+
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
-    transcriptionist = Transcriptionist("ja-JP")
+    transcriptionist = Transcriptionist("ja-JP", RATE)
 
     with MicrophoneStream(RATE, CHUNK) as stream:
         audio_generator = stream.generator()
