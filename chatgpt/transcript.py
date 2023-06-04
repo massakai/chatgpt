@@ -4,6 +4,7 @@ from typing import Generator
 
 import pyaudio
 from google.cloud import speech
+from google.api_core.exceptions import OutOfRange
 
 
 class MicrophoneStream:
@@ -91,18 +92,19 @@ class Transcriptionist:
             for content in audio_data
         )
 
-        responses = self._client.streaming_recognize(self._streaming_config, requests)
+        while True:
+            responses = self._client.streaming_recognize(self._streaming_config, requests)
+            # FIXME 5分以上経過するとAPIの仕様でエラーになる
+            for response in responses:
+                if not response.results:
+                    continue
+                result = response.results[0]
+                if not result.alternatives:
+                    continue
+                if not result.is_final:
+                    continue
 
-        for response in responses:
-            if not response.results:
-                continue
-            result = response.results[0]
-            if not result.alternatives:
-                continue
-            if not result.is_final:
-                continue
-
-            yield result.alternatives[0].transcript
+                yield result.alternatives[0].transcript
 
 
 def main():
