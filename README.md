@@ -27,7 +27,7 @@ Google CloudでSpeech-to-Text API, Text-to-Speech APIを利用するため、サ
 $ export OPENAI_API_KEY=sk-JEFZq...
 $ export GOOGLE_APPLICATION_CREDENTIALS=/Users/massakai/Downloads/massakai-project-sandbox-7c6d1538c588.json
 
-$ python chatgpt/main.py 
+$ python -m chatgpt.main
 user: こんばんは
 assistant: 、私はAIアシスタントです。何かお力になれることがあれば教えてください。
 user: マリオカート8デラックスについて教えてください
